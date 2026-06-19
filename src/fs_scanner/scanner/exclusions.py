@@ -6,53 +6,23 @@ import fnmatch
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from ..platform import current as platform
+
 
 @dataclass(frozen=True)
 class ExclusionEngine:
     """Determines which files and directories to skip during scanning.
 
-    Exclusion hierarchy:
-    1. System paths (absolute macOS directories)
-    2. Excluded directory names (anywhere in tree)
-    3. Excluded file names (anywhere in tree)
-    4. Sensitive file patterns (never recorded)
-    5. Sensitive directories (never recorded)
-    6. User glob patterns (from CLI --exclude or .scannerignore)
+    Uses the platform abstraction layer for OS-specific exclusion paths.
+    Cross-platform: sensitive file patterns, user glob patterns.
+    OS-specific: system paths, excluded dir/file names, sensitive dirs.
     """
 
-    system_paths: tuple[str, ...] = (
-        "/System",
-        "/Library",
-        "/usr",
-        "/bin",
-        "/sbin",
-        "/private",
-        "/var",
-        "/cores",
-    )
-
-    excluded_dir_names: tuple[str, ...] = (
-        ".Spotlight-V100",
-        ".fseventsd",
-        ".Trashes",
-    )
-
-    excluded_file_names: tuple[str, ...] = (".DS_Store",)
-
-    sensitive_patterns: tuple[str, ...] = (
-        ".env",
-        "*.pem",
-        "*.key",
-        "credentials*",
-        "*.kdbx",
-    )
-
-    sensitive_dirs: tuple[str, ...] = (
-        "~/.aws/credentials",
-        "~/.ssh/",
-        "~/.gnupg/",
-    )
-
+    system_paths: tuple[str, ...] = field(default_factory=lambda: platform.system_exclusion_paths())
+    excluded_dir_names: tuple[str, ...] = field(default_factory=lambda: platform.excluded_dir_names())
+    excluded_file_names: tuple[str, ...] = field(default_factory=lambda: platform.excluded_file_names())
+    sensitive_patterns: tuple[str, ...] = field(default_factory=lambda: platform.sensitive_patterns())
+    sensitive_dirs: tuple[str, ...] = field(default_factory=lambda: platform.sensitive_dirs())
     user_patterns: tuple[str, ...] = ()
 
     # Resolved sensitive directory paths (computed post-init)

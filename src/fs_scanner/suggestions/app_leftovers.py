@@ -22,7 +22,10 @@ def find_suggestions(scan_root: Path) -> list[Suggestion]:
 
     app_support = home / "Library" / "Application Support"
     if app_support.is_dir():
-        suggestions.extend(_check_app_support(app_support, installed_apps))
+        try:
+            suggestions.extend(_check_app_support(app_support, installed_apps))
+        except (PermissionError, OSError):
+            pass
 
     launch_agents = home / "Library" / "LaunchAgents"
     if launch_agents.is_dir():
