@@ -1,5 +1,9 @@
 # fs-scanner
 
+<p align="center">
+  <img src="logo.png" alt="fs-scanner logo" width="200">
+</p>
+
 A deterministic, read-only CLI tool that scans the filesystem, catalogs files by type and size, and suggests reclaimable disk space. It never modifies or deletes any file.
 
 Cross-platform core with OS-specific suggestion modules (macOS fully supported, Windows planned).
