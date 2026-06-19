@@ -117,20 +117,24 @@ src/fs_scanner/
 ├── cli.py              # Click CLI + pipeline orchestration
 ├── config.py           # Configuration loading & size parsing
 ├── progress.py         # Rich progress bar
+├── platform/
+│   ├── __init__.py     # Auto-detect OS, export current platform
+│   ├── base.py         # Cross-platform defaults (Maven, Gradle, npm, Docker)
+│   └── macos.py        # macOS-specific (~/Library, Homebrew, TCC workaround)
 ├── scanner/
 │   ├── walker.py       # Parallel filesystem walker
-│   ├── exclusions.py   # System/sensitive file rules
+│   ├── exclusions.py   # System/sensitive file rules (uses platform layer)
 │   └── metadata.py     # Spotlight mdls integration
 ├── catalog/
 │   ├── models.py       # Core dataclasses
 │   └── categorizer.py  # Extension → category mapping
 ├── suggestions/
-│   ├── cache_rules.py  # Cache/temp detection
+│   ├── cache_rules.py  # Cache/temp detection (platform-aware)
 │   ├── git_repos.py    # Git orphan detection
 │   ├── homebrew.py     # Homebrew cleanup
 │   ├── app_leftovers.py # Uninstalled app residuals
 │   ├── xcode.py        # Xcode artifacts
-│   ├── mail.py         # Mail attachments
+│   ├── mail.py         # Mail/Thunderbird attachments
 │   ├── icloud.py       # iCloud local copies
 │   └── timemachine.py  # Time Machine snapshots
 ├── reporters/
@@ -150,6 +154,18 @@ src/fs_scanner/
 - **No symlink traversal**: records symlinks but never follows them
 - **Graceful errors**: permission denied → log warning and continue, never crash
 - **Deterministic**: same filesystem state → byte-identical JSON output
+
+## Platform Support
+
+The codebase is split into **cross-platform** and **OS-specific** layers:
+
+| Layer | File | What it handles |
+|-------|------|-----------------|
+| Cross-platform | `platform/base.py` | Maven, Gradle, npm, Docker, Ollama caches; sensitive file patterns |
+| macOS-specific | `platform/macos.py` | ~/Library paths, Homebrew, TCC/SIP workaround via `du` subprocess |
+
+The scanner, categorizer, reporters, dashboard, and Git detection work on any OS.
+To add Windows support, create `platform/windows.py` — see `docs/proposal-windows-support.md`.
 
 ## Requirements
 
