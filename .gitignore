@@ -1,0 +1,25 @@
+# Output reports
+output/
+fs-scanner-report.json
+fs-scanner-report.html
+
+# Kiro IDE
+.kiro/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.venv/
+*.egg
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
+# OS
+.DS_Store

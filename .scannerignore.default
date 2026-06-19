@@ -1,0 +1,28 @@
+# Default exclusion patterns for fs-scanner
+# Lines starting with # are comments
+# Patterns use glob syntax
+
+# macOS system directories (always excluded by default)
+# /System, /Library, /usr, /bin, /sbin, /private, /var, /cores
+
+# macOS metadata directories
+.Spotlight-V100
+.fseventsd
+.Trashes
+.DS_Store
+
+# Version control
+.git
+
+# Python
+__pycache__
+*.pyc
+*.pyo
+
+# Node.js
+node_modules
+
+# Build artifacts
+build
+dist
+target
