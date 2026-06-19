@@ -1,6 +1,8 @@
 # fs-scanner
 
-A deterministic, read-only CLI tool for macOS that scans the filesystem, catalogs files by type and size, and suggests reclaimable disk space. It never modifies or deletes any file.
+A deterministic, read-only CLI tool that scans the filesystem, catalogs files by type and size, and suggests reclaimable disk space. It never modifies or deletes any file.
+
+Cross-platform core with OS-specific suggestion modules (macOS fully supported, Windows planned).
 
 ## Features
 
@@ -10,6 +12,7 @@ A deterministic, read-only CLI tool for macOS that scans the filesystem, catalog
 - **3 output formats** — colored terminal, deterministic JSON, interactive HTML dashboard
 - **Scan comparison** — diff two scans to see what changed over time
 - **macOS-aware** — skips system/SIP-protected directories, handles TCC gracefully
+- **Cross-platform core** — scanner, categorizer, reporters work on any OS; OS-specific suggestions via platform layer
 - **Security** — excludes sensitive files (.env, .pem, .key, credentials), never logs their paths
 
 ## Installation
@@ -170,8 +173,16 @@ To add Windows support, create `platform/windows.py` — see `docs/proposal-wind
 ## Requirements
 
 - Python >= 3.10
-- macOS (uses macOS-specific paths and tools like `du`, `tmutil`, `mdls`)
 - Dependencies: `click`, `rich`, `pyyaml`, `jinja2`
+
+### macOS-specific features
+
+Full suggestion modules (Homebrew, Xcode, iCloud, Time Machine, Mail, App Leftovers) require macOS.
+For full access to protected directories (Documents, Downloads, Photos), grant "Full Disk Access" to your terminal app in System Settings > Privacy & Security.
+
+### Cross-platform
+
+The scanner, categorizer, file table, JSON/HTML reports, Git detection, and cache rules for Maven/Gradle/npm/Docker work on any OS (macOS, Linux, Windows).
 
 ## License
 
