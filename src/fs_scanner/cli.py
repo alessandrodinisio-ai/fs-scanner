@@ -130,10 +130,20 @@ def scan(
         from .suggestions.git_repos import find_suggestions as find_git_suggestions
         from .suggestions.cache_rules import find_suggestions as find_cache_suggestions
         from .suggestions.homebrew import find_suggestions as find_homebrew_suggestions
+        from .suggestions.app_leftovers import find_suggestions as find_leftover_suggestions
+        from .suggestions.xcode import find_suggestions as find_xcode_suggestions
+        from .suggestions.mail import find_suggestions as find_mail_suggestions
+        from .suggestions.icloud import find_suggestions as find_icloud_suggestions
+        from .suggestions.timemachine import find_suggestions as find_tm_suggestions
 
         suggestions.extend(find_git_suggestions(config.root))
         suggestions.extend(find_cache_suggestions(config.root))
         suggestions.extend(find_homebrew_suggestions(config.root))
+        suggestions.extend(find_leftover_suggestions(config.root))
+        suggestions.extend(find_xcode_suggestions(config.root))
+        suggestions.extend(find_mail_suggestions(config.root))
+        suggestions.extend(find_icloud_suggestions(config.root))
+        suggestions.extend(find_tm_suggestions(config.root))
         suggestions.sort(key=lambda s: s.size, reverse=True)
 
     result = ScanResult(
@@ -159,21 +169,25 @@ def scan(
         return
 
     # Output
+    # Always save a JSON report with timestamp
+    from .reporters.json_report import render_json
+    timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S")
+    report_dir = Path("output")
+    report_dir.mkdir(parents=True, exist_ok=True)
+    json_path = report_dir / f"scan_{timestamp_str}.json"
+    render_json(result, json_path)
+    click.echo(f"Report saved: {json_path.resolve()}", err=True)
+
     if config.output_format == "terminal":
         from .reporters.terminal import render_terminal
         render_terminal(result, top_n=config.top_n)
     elif config.output_format == "json":
-        from .reporters.json_report import render_json
-        output_path = Path("output") / "fs-scanner-report.json"
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        render_json(result, output_path)
-        click.echo(f"JSON report written to: {output_path.resolve()}", err=True)
+        pass  # Already saved above
     elif config.output_format == "html":
         from .reporters.html_report import render_html
-        output_path = Path("output") / "fs-scanner-report.html"
-        output_path.parent.mkdir(parents=True, exist_ok=True)
-        render_html(result, output_path)
-        click.echo(f"HTML report written to: {output_path.resolve()}", err=True)
+        html_path = report_dir / f"scan_{timestamp_str}.html"
+        render_html(result, html_path)
+        click.echo(f"HTML dashboard: {html_path.resolve()}", err=True)
 
 
 def _show_dry_run(config: ScanConfig) -> None:
